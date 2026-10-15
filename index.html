@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Quiz Competition Buzzer – 8085 Logic Simulator</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f4f6f9;--card:#fff;--tx:#0f172a;--mut:#475569;--gb:#dde2ea;--ac:#2563eb;--ok:#16a34a;--bad:#dc2626;--wn:#d97706}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f141b;--card:#18202b;--tx:#e6ebf2;--mut:#9aa7ba;--gb:#283342;--ac:#60a5fa;--ok:#4ade80;--bad:#f87171;--wn:#fbbf24}}
+:root[data-theme="dark"]{--bg:#0f141b;--card:#18202b;--tx:#e6ebf2;--mut:#9aa7ba;--gb:#283342;--ac:#60a5fa;--ok:#4ade80;--bad:#f87171;--wn:#fbbf24}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif}
+header{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 12px;padding:8px 12px;background:var(--card);border:1px solid var(--gb);border-radius:12px}
+h1{font-size:16px;margin:0}h2{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin:0 0 6px}
+main{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:10px;padding:0 12px 12px;max-width:1100px;margin:auto}
+.card{background:var(--card);border:1px solid var(--gb);border-radius:12px;padding:10px;min-width:0}.wide{grid-column:1/-1}
+button{font:inherit;color:var(--tx);background:var(--card);border:1px solid var(--gb);border-radius:8px;padding:6px 10px;cursor:pointer}
+button:disabled{opacity:.4;cursor:default}button.p{background:color-mix(in srgb,var(--ac) 30%,transparent);border-color:var(--ac)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.mut{color:var(--mut);font-size:12px}
+.dash{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:12px;align-items:start}
+@media (max-width:640px){.dash{grid-template-columns:1fr}}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:6px}
+.chip{border:1px solid var(--gb);border-radius:8px;padding:5px 8px;font:600 12px ui-monospace,Menlo,monospace}.chip small{display:block;color:var(--mut);font-weight:400;font-size:10px}
+.chip.on{border-color:var(--ac);background:color-mix(in srgb,var(--ac) 22%,transparent)}.chip.bad{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 16%,transparent)}
+.bits{display:flex;gap:4px;margin-bottom:8px}.b{flex:1;text-align:center;border:1px solid var(--gb);border-radius:6px;font:600 15px ui-monospace,monospace}.b s{display:block;text-decoration:none;font-size:9px;color:var(--mut)}.b.on{background:color-mix(in srgb,var(--ac) 35%,transparent);border-color:var(--ac)}
+.code{font:12px ui-monospace,monospace;overflow-x:auto}.ln{display:flex;gap:8px;padding:2px 6px;border-radius:6px;white-space:nowrap}.ln b{width:84px;color:var(--mut);font-weight:600}.ln span{width:104px}.ln i{color:var(--mut)}.ln em{font-style:normal;width:48px;color:var(--ac)}.ln u{text-decoration:none;width:66px;color:var(--mut)}.ln.cur{background:color-mix(in srgb,var(--ac) 35%,transparent)}
+#log{height:140px;overflow:auto;font:12px ui-monospace,monospace;color:var(--mut)}#log div{padding:2px 0;border-bottom:1px solid var(--gb)}
+#demo{display:grid;grid-template-columns:1fr 1fr;gap:6px}#demo button{text-align:left;font-size:12.5px}
+#say{margin-top:8px;font-size:13px;min-height:3.6em;font-weight:600}
+.dev{margin:0 auto;width:min(100%,310px);border:2px solid var(--gb);border-radius:14px;padding:10px;background:color-mix(in srgb,var(--tx) 6%,var(--card));transform:perspective(800px) rotateY(-10deg) rotateX(3deg);box-shadow:8px 8px 0 color-mix(in srgb,var(--tx) 10%,transparent);transition:border-color .3s}
+.lcd{background:#0c2a2a;color:#7ff5d0;border-radius:8px;padding:8px 10px;font:13px ui-monospace,monospace;box-shadow:inset 0 0 18px #000}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+#lcd{text-align:center;font-weight:700;margin-bottom:10px}
+.tbs{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:4px 4px 10px}
+.tb{height:80px;background:var(--c);color:#fff;border:none;border-radius:14px;font-weight:800;font-size:15px;box-shadow:0 5px 0 color-mix(in srgb,var(--c) 55%,#000)}
+.tb:active{transform:translateY(4px);box-shadow:0 1px 0 color-mix(in srgb,var(--c) 55%,#000)}.tb small{display:block;font-weight:500;opacity:.9}
+.tb.win{animation:pl .45s infinite alternate;box-shadow:0 0 22px var(--c),0 0 0 4px #fff}@keyframes pl{from{transform:scale(1)}to{transform:scale(1.07)}}
+</style></head><body>
+<header><h1>🔔 Quiz Competition Buzzer — 8085 Logic Simulator</h1>
+<div class="row"><label class="mut">Clock <input id="spd" type="range" min="1" max="5" value="4"></label><button id="snd">🔊 Sound on</button><button id="th">Theme</button><button id="rst">Reset</button></div></header>
+<main>
+<section class="card wide"><h2>Team buzzers and quizmaster panel</h2><div class="dash"><div><div class="dev"><div class="lcd" id="lcd"></div><div class="tbs" id="teams"></div></div></div>
+<div><div class="mut" style="margin-bottom:4px">Quizmaster</div><div class="row"><button class="p" id="en">▶ Start question</button><button id="cl">⏹ Close / reset buzzers</button></div>
+<div class="row" style="margin-top:6px"><button id="ok">✔ Correct +10</button><button id="no">✖ Wrong −5</button></div>
+<div class="grid" id="score" style="margin:8px 0"></div>
+<div class="mut" style="margin-bottom:4px">Use cases (auto-demo)</div><div id="demo"></div><div id="say">Pick a use case to start.</div></div></div></section>
+<section class="card"><h2>I/O ports</h2><div class="mut">IN 00H: D0-D3 team buzzers, D7 question open</div><div class="bits" id="pin"></div><div class="mut">OUT 01H: D0-D3 team LEDs, D4 buzzer, D7 ready lamp</div><div class="bits" id="pout"></div></section>
+<section class="card"><h2>8085 registers</h2><div class="code" id="regs" style="line-height:1.8;font-weight:600"></div></section>
+<section class="card wide"><h2>Assembly program (GNUSim8085 style)</h2><div class="code" id="asm"></div></section>
+<section class="card wide"><h2>Event log</h2><div id="log"></div></section>
+</main>
+<script>
+const $=id=>document.getElementById(id),hx=v=>v.toString(16).toUpperCase().padStart(2,"0")+"H",h4=v=>v.toString(16).toUpperCase().padStart(4,"0")+"H";
+function log(t){const d=document.createElement("div");d.textContent=new Date().toLocaleTimeString()+"  "+t;$("log").prepend(d)}
+$("th").onclick=()=>{const d=document.documentElement,dark=d.dataset.theme?d.dataset.theme=="dark":matchMedia("(prefers-color-scheme:dark)").matches;d.dataset.theme=dark?"light":"dark"};
+const TM=[["A","Red"],["B","Blue"],["C","Green"],["D","Yellow"]],COL=["#dc2626","#2563eb","#16a34a","#d97706"];
+const ASM=[["START:","MVI A,80H","ready lamp"],["","OUT 01H","lamp on"],["POLL:","IN 00H","read buzzers"],["","MOV B,A","save copy"],["","ANI 80H","question open?"],["","JZ SLEEP","no: close"],["","MOV A,B","restore"],["","ANI 0FH","team pressed?"],["","JZ POLL","no: keep polling"],["","MVI C,01H","team counter"],["FIND:","RAR","bit0 → CY"],["","JC WIN","found"],["","INR C","next team"],["","JMP FIND","keep looking"],["WIN:","MVI A,01H","one-hot LED"],["SHL:","DCR C","count down"],["","JZ SHOW","done"],["","RLC","shift left"],["","JMP SHL","repeat"],["SHOW:","ORI 10H","add buzzer bit"],["","OUT 01H","LED + buzzer"],["","HLT","lock all buttons"],["SLEEP:","MVI A,00H","all off"],["","OUT 01H","lamps off"],["","HLT","stop"]];
+const AD=["2000H","2002H","2004H","2006H","2007H","2009H","200CH","200DH","200FH","2012H","2014H","2015H","2018H","2019H","201CH","201EH","201FH","2022H","2023H","2026H","2028H","202AH","202BH","202DH","202FH"];
+const BY=["3E 80","D3 01","DB 00","47","E6 80","CA 2B 20","78","E6 0F","CA 04 20","0E 01","1F","DA 1C 20","0C","C3 14 20","3E 01","0D","CA 26 20","07","C3 1E 20","F6 10","D3 01","76","3E 00","D3 01","76"];
+let inp,outp,run,c,win,sc,q,tok=0,AC,snd=true,timer;
+const bits=v=>[7,6,5,4,3,2,1,0].map(i=>`<span class="b ${v>>i&1?"on":""}"><s>D${i}</s>${v>>i&1}</span>`).join("");
+function aud(){if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}}try{AC&&AC.state=="suspended"&&AC.resume()}catch(e){}}
+function buzz(){if(!snd||!AC)return;try{const o=AC.createOscillator(),g=AC.createGain();o.type="square";o.frequency.value=700;g.gain.value=.07;o.connect(g);g.connect(AC.destination);o.start();o.stop(AC.currentTime+1.2)}catch(e){}}
+function reset(){tok++;inp=0;outp=0;run=false;win=-1;sc=[0,0,0,0];q=1;c={A:0,B:0,C:0,Z:0,S:0,CY:0,pc:0,cur:-1,polls:0};$("log").innerHTML="";log("Reset: scores = 0, question 1, buzzers locked");render()}
+function onOut(){const k=[0,1,2,3].find(k=>outp>>k&1);
+ if(k!==undefined){win=k;log("OUT 01H = "+hx(outp)+" → Team "+TM[k][0]+" ("+TM[k][1]+") buzzed first! Other buzzers are locked");buzz()}
+ else if(outp&128)log("OUT 01H = "+hx(outp)+" → READY lamp on, 8085 is polling the buzzers");else log("OUT 01H = 00H → all lamps off, buzzers locked")}
+function step(){if(c.pc<0){run=false;c.cur=-1;c.pc=0;inp=0;render();return}
+ const i=c.pc;let n=i+1;c.cur=i;const fl=()=>{c.Z=c.A?0:1;c.S=c.A>>7&1;c.CY=0};if(i==2)c.polls++;
+ switch(i){case 0:c.A=128;break;case 1:case 20:case 23:outp=c.A;onOut();break;case 2:c.A=inp;break;case 3:c.B=c.A;break;case 4:c.A&=128;fl();break;case 5:if(c.Z)n=22;break;case 6:c.A=c.B;break;case 7:c.A&=15;fl();break;case 8:if(c.Z)n=2;break;case 9:c.C=1;break;
+ case 10:{const cy=c.A&1;c.A=(c.A>>1)|(c.CY<<7);c.CY=cy;break}case 11:if(c.CY)n=14;break;case 12:c.C=(c.C+1)&255;c.Z=c.C?0:1;break;case 13:n=10;break;case 14:c.A=1;break;
+ case 15:c.C=(c.C-1)&255;c.Z=c.C?0:1;break;case 16:if(c.Z)n=19;break;case 17:{const cy=c.A>>7&1;c.A=((c.A<<1)|cy)&255;c.CY=cy;break}case 18:n=15;break;case 19:c.A|=16;fl();break;case 21:case 24:n=-1;break;case 22:c.A=0;break}
+ c.pc=n;render()}
+function startQ(){if(run)return;inp=128;outp=0;win=-1;c.polls=0;log("Quizmaster starts question "+q+" (D7 = 1)");run=true;c.pc=0;render()}
+function press(k){if(!run){log("Team "+TM[k][0]+" pressed, but the buzzers are LOCKED (question not open)");return}inp|=1<<k;log("Team "+TM[k][0]+" presses the buzzer");render()}
+function closeQ(){if(run){inp&=127;log("Quizmaster closes the question (D7 = 0)")}else{outp=0;win=-1;log("Quizmaster resets the buzzers");render()}}
+function award(ok){if(win<0)return;sc[win]+=ok?10:-5;log("Team "+TM[win][0]+(ok?" answered correctly: +10":" answered wrongly: -5")+" → score "+sc[win]);q++;outp=0;win=-1;inp=0;render()}
+function render(){
+ $("lcd").textContent=win>=0?"🔔 TEAM "+TM[win][0]+" BUZZED FIRST!":(run?"QUESTION "+q+" OPEN — BUZZ IN!":"BUZZERS LOCKED");
+ $("teams").innerHTML=TM.map((t,k)=>`<button class="tb ${outp>>k&1?"win":""}" data-k="${k}" style="--c:${COL[k]}">TEAM ${t[0]}<small>${t[1]}${outp>>k&1?" · FIRST!":""}</small></button>`).join("");
+ $("score").innerHTML=`<div class="chip"><small>Question</small>${q}</div><div class="chip ${run&&win<0?"on":""}"><small>8085 polling</small>${run&&win<0?"loops: "+c.polls:"stopped"}</div>`+TM.map((t,k)=>`<div class="chip ${win==k?"on":""}"><small>Team ${t[0]}</small>${sc[k]} pts</div>`).join("");
+ $("pin").innerHTML=bits(inp);$("pout").innerHTML=bits(outp);
+ $("regs").innerHTML=`A = ${hx(c.A)} &nbsp; B = ${hx(c.B)} &nbsp; C = ${hx(c.C)}<br>Z = ${c.Z} &nbsp; S = ${c.S} &nbsp; CY = ${c.CY}<br>PC = ${AD[run&&c.cur>=0?c.cur:0]} &nbsp; IR: ${run&&c.cur>=0?ASM[c.cur][1]:"— (halted)"}`;
+ $("asm").innerHTML=ASM.map((r,i)=>`<div class="ln ${run&&i==c.cur?"cur":""}"><em>${AD[i]}</em><u>${BY[i]}</u><b>${r[0]}</b><span>${r[1]}</span><i>; ${r[2]}</i></div>`).join("");
+ $("en").disabled=run;$("ok").disabled=$("no").disabled=win<0}
+$("teams").onclick=e=>{const b=e.target.closest("button");if(b){aud();press(+b.dataset.k)}};
+$("en").onclick=()=>{aud();startQ()};$("cl").onclick=closeQ;$("ok").onclick=()=>award(true);$("no").onclick=()=>award(false);$("rst").onclick=reset;
+$("snd").onclick=()=>{snd=!snd;aud();$("snd").textContent=snd?"🔊 Sound on":"🔇 Sound off"};
+function loop(){clearInterval(timer);timer=setInterval(()=>{if(run)step()},[1000,700,450,250,120][$("spd").value-1])}$("spd").oninput=loop;
+async function play(i){reset();const my=++tok;const h={W:ms=>new Promise((r,j)=>setTimeout(()=>my==tok?r():j("stop"),ms)),U:async()=>{while(run)await h.W(100)}};
+ try{for(const [say,fn] of DEMOS[i][1]){$("say").textContent=say;await fn(h);await h.W(900)}$("say").textContent="✔ Demo finished. Try another use case, or press the buzzers yourself."}catch(e){}}
+const DEMOS=[
+["🔔 First to buzz wins",[["The quizmaster reads a question and presses Start. The ready lamp lights and the 8085 polls the port in a loop: IN, ANI, JZ POLL.",async h=>{startQ();await h.W(3000)}],["Team B presses first. IN reads the bit, RAR and JC find which team it is, and OUT lights its LED and the buzzer. Then HLT locks every other button.",async h=>{press(1);await h.U()}],["The answer is correct, so the quizmaster awards +10 points.",async h=>award(true)]]],
+["⏱ Buzz before the question",[["Team A presses its buzzer, but the quizmaster has not started the question.",async h=>press(0)],["Nothing happens: the 8085 is halted and the buzzers are locked. No early or false start.",async h=>{}]]],
+["⚖ Simultaneous press (tie)",[["The question is open and the 8085 is polling.",async h=>{startQ();await h.W(2000)}],["Teams C and D press at the same instant. RAR checks bit 0 first, so the lower-numbered team wins. This is a priority resolver.",async h=>{press(2);press(3);await h.U()}],["Team C is declared the first to buzz.",async h=>{}]]],
+["🏁 Mini quiz (4 questions)",[["Four questions are played. Each time the quizmaster starts, one team buzzes in and is marked.",async h=>{const R=[[0,true],[1,true],[0,true],[3,false]];for(let n=0;n<R.length;n++){$("say").textContent="Question "+(n+1)+": Team "+TM[R[n][0]][0]+" buzzes in ("+(R[n][1]?"correct":"wrong")+").";startQ();await h.W(1800);press(R[n][0]);await h.U();await h.W(1000);award(R[n][1]);await h.W(700)}}],["Final scores: Team A leads with 20 points, Team B has 10, Team D has −5.",async h=>{}]]]];
+$("demo").innerHTML=DEMOS.map((d,i)=>`<button data-i="${i}">${d[0]}</button>`).join("")+'<button id="stop">⏹ Stop</button>';
+$("demo").onclick=e=>{const b=e.target.closest("button");if(!b)return;aud();if(b.id=="stop"){tok++;$("say").textContent="Demo stopped.";return}play(+b.dataset.i)};
+reset();loop();
+</script></body></html>
